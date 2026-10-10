@@ -297,7 +297,11 @@ def figure(fig, height=410):
 
 
 def info_note(message):
-    st.markdown(f'<div class="info-note">{message}</div>', unsafe_allow_html=True)
+    """Render explanatory notes with the correct language direction and alignment."""
+    st.markdown(
+        f'<div class="info-note" dir="{dir_attr}" lang="{language}">{message}</div>',
+        unsafe_allow_html=True,
+    )
 
 
 st.markdown(
@@ -313,6 +317,17 @@ st.markdown(
 [data-testid="stAppViewContainer"] .block-container {
   direction:__DIR__;
   text-align:__ALIGN__;
+}
+[data-testid="stAppViewContainer"] [data-testid="stMarkdownContainer"],
+[data-testid="stAppViewContainer"] [data-testid="stCaptionContainer"],
+[data-testid="stAppViewContainer"] [data-testid="stHeadingWithActionElements"] {
+  direction:__DIR__;
+  text-align:__ALIGN__ !important;
+}
+[data-testid="stAppViewContainer"] [data-testid="stMarkdownContainer"] :is(h1,h2,h3,h4,h5,h6,p),
+[data-testid="stAppViewContainer"] [data-testid="stCaptionContainer"] p {
+  direction:__DIR__;
+  text-align:__ALIGN__ !important;
 }
 [data-testid="stSidebar"] {
   direction:__DIR__;
@@ -352,7 +367,18 @@ h1,h2,h3 {letter-spacing:-.012em}
 .info-note {
   background:#182e49; border-inline-start:3px solid #38bdf8;
   border-radius:7px; padding:14px 16px; margin-top:15px;
-  direction:__DIR__; text-align:__ALIGN__; line-height:1.75;
+  direction:__DIR__ !important;
+  text-align:__ALIGN__ !important;
+  line-height:1.9;
+  unicode-bidi:isolate;
+}
+.info-note[dir="rtl"] {
+  direction:rtl !important;
+  text-align:right !important;
+}
+.info-note[dir="ltr"] {
+  direction:ltr !important;
+  text-align:left !important;
 }
 @media (max-width:600px) {
   .kpi-grid {grid-template-columns:1fr 1fr; gap:10px}
