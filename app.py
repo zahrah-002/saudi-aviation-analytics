@@ -91,6 +91,14 @@ WORDS = {
         "movement_growth": "نمو حركات الطيران (%)",
         "annual_note": "ملاحظة منهجية: تتضمن بيانات 2022 مجاميع سنوية، في حين تتوفر تفاصيل شهرية في سنوات أخرى. تختلف تغطية المطارات ونطاق الملفات، لذلك يجب توخي الحذر عند مقارنة الإجماليات ومعدلات النمو السنوية.",
         "airport_title": "ترتيب المطارات",
+        "select_two_airports": "يجب اختيار مجموعة مكوّنة من مطارين أو أكثر للمقارنة.",
+        "one_airport_note": "تظهر بيانات المطار المحدد أدناه، وتُتاح المقارنة بين المطارات عند تحديد مطارين أو أكثر.",
+        "national_growth_title": "مقارنة الأداء بين 2024 و2025",
+        "passenger_yoy_kpi": "تغير أعداد المسافرين",
+        "movement_yoy_kpi": "تغير حركات الطيران",
+        "national_growth_note": "مقارنة استكشافية حسب الفلاتر المختارة، وتشمل {airports} مطارًا تتوفر لها سجلات في جميع أشهر 2024 و2025. اكتمال الأشهر لا يضمن اكتمال كل الفئات التشغيلية.",
+        "type_comparison_title": "المسافرون حسب نوع الرحلة",
+        "official_source_link": "مكتبة البيانات المفتوحة — الهيئة العامة للطيران المدني",
         "airport_name": "المطار",
         "show_count": "عدد المطارات المعروضة",
         "share_pct": "حصة المسافرين (%)",
@@ -161,6 +169,14 @@ WORDS = {
         "movement_growth": "Flight movement growth (%)",
         "annual_note": "Methodology: 2022 contains annual aggregates, whereas other years include monthly detail. Airport coverage and source-file scopes vary, so comparisons of national totals and annual growth require care.",
         "airport_title": "Airport Rankings",
+        "select_two_airports": "Select a group of at least two airports to compare.",
+        "one_airport_note": "The selected airport's individual data is shown below. Select two or more airports for an airport-to-airport comparison.",
+        "national_growth_title": "Performance Comparison: 2024 vs 2025",
+        "passenger_yoy_kpi": "Passenger change",
+        "movement_yoy_kpi": "Flight movement change",
+        "national_growth_note": "Exploratory comparison based on the active filters, covering {airports} airports with records for all twelve months of 2024 and 2025. Monthly presence does not guarantee complete category coverage.",
+        "type_comparison_title": "Passengers by Flight Type",
+        "official_source_link": "GACA Open Data Library",
         "airport_name": "Airport",
         "show_count": "Airports to display",
         "share_pct": "Passenger share (%)",
@@ -258,8 +274,12 @@ def info_note(message):
 st.markdown(
     """
 <style>
-.stApp {background:#0c1628; color:#edf7ff}
+.stApp {background:#0c1628; color:#edf7ff; font-family:Arial,"Segoe UI",sans-serif}
 [data-testid="stSidebar"] {background:#122139}
+[data-testid="stMarkdownContainer"], [data-testid="stWidgetLabel"],
+.stApp h1, .stApp h2, .stApp h3, .stApp p {
+  font-family:Arial,"Segoe UI",sans-serif !important;
+}
 .block-container {padding-top:1.5rem; max-width:1350px}
 [data-testid="stAppViewContainer"] .block-container {
   direction:__DIR__;
@@ -379,6 +399,9 @@ with st.sidebar:
         format_func=lambda value: T["arrival"] if value == "ARRIVAL" else T["departure"],
     )
     st.caption(T["source"])
+    st.markdown(
+        f'[{T["official_source_link"]}](https://www.gaca.gov.sa/ar/Open-Data/OpenDataLibrary)'
+    )
 
 st.markdown(
     f'<div class="hero"><h1>✈️ {T["title"]}</h1>'
@@ -423,6 +446,48 @@ if page == "national":
         ),
     ])
 
+    # Year-over-year comparison only for airports with monthly records
+    # in all 12 months of both comparison years.
+    if selected_year == 2025:
+        complete_coverage = (
+            data[data.year.isin([2024, 2025]) & data.month_num.notna()]
+            .groupby(["airport", "year"]).month_num.nunique()
+            .unstack(fill_value=0)
+            .reindex(columns=[2024, 2025], fill_value=0)
+        )
+        complete_codes = complete_coverage.index[
+            (complete_coverage[2024] == 12) &
+            (complete_coverage[2025] == 12)
+        ]
+        comparable = filtered[
+            filtered.airport.isin(complete_codes) &
+            filtered.year.isin([2024, 2025])
+        ]
+        comparison_totals = comparable.groupby("year")[["passengers", "flights"]].sum()
+        if (
+            {2024, 2025}.issubset(comparison_totals.index)
+            and comparison_totals.loc[2024, "passengers"] > 0
+            and comparison_totals.loc[2024, "flights"] > 0
+        ):
+            passenger_change = (
+                (comparison_totals.loc[2025, "passengers"] /
+                 comparison_totals.loc[2024, "passengers"] - 1) * 100
+            )
+            movement_change = (
+                (comparison_totals.loc[2025, "flights"] /
+                 comparison_totals.loc[2024, "flights"] - 1) * 100
+            )
+            st.markdown(f"#### {T['national_growth_title']}")
+            render_kpis([
+                (T["passenger_yoy_kpi"], f"{passenger_change:+.2f}%"),
+                (T["movement_yoy_kpi"], f"{movement_change:+.2f}%"),
+            ])
+            st.caption(
+                T["national_growth_note"].format(
+                    airports=int(comparable.airport.nunique())
+                )
+            )
+
     left, right = st.columns(2)
     with left:
         st.markdown(f"#### {T['passenger_trend']}")
@@ -440,6 +505,29 @@ if page == "national":
             color_discrete_sequence=[PALETTE[1]],
         )
         figure(plot)
+
+    st.markdown(f"#### {T['type_comparison_title']}")
+    by_type = (
+        filtered[filtered.year == selected_year]
+        .groupby("flight_type", as_index=False)
+        .passengers.sum()
+    )
+    by_type[T["type_filter"]] = by_type.flight_type.map({
+        "Domestic": T["domestic"], "International": T["international"]
+    })
+    type_plot = px.bar(
+        by_type,
+        x=T["type_filter"], y="passengers",
+        text="passengers",
+        color=T["type_filter"],
+        color_discrete_sequence=PALETTE,
+        labels={"passengers": T["passengers"], T["type_filter"]: T["type_filter"]},
+    )
+    type_plot.update_traces(
+        texttemplate="%{text:,.0f}", textposition="outside", cliponaxis=False
+    )
+    type_plot.update_layout(showlegend=False)
+    figure(type_plot, height=340)
 
     yearly[T["passenger_growth"]] = (
         yearly.passengers.pct_change() * 100
@@ -474,22 +562,34 @@ elif page == "airports":
         ranking.passengers / total_passengers * 100
         if total_passengers else 0
     ).round(2)
-    count = st.slider(
-        T["show_count"], min_value=1,
-        max_value=len(ranking), value=min(10, len(ranking)),
-    )
-    plot = px.bar(
-        ranking.head(count).iloc[::-1],
-        x="passengers", y="airport_name", orientation="h",
-        color_discrete_sequence=[PALETTE[0]],
-        hover_data={"share_pct": True},
-        labels={
-            "passengers": T["passengers"],
-            "airport_name": T["airport_name"],
-            "share_pct": T["share_pct"],
-        },
-    )
-    figure(plot, max(380, count * 36))
+    if len(ranking) < 2:
+        # Streamlit sliders require min_value < max_value.
+        # A single airport may still be inspected in the table below.
+        st.info(T["select_two_airports"])
+        st.caption(T["one_airport_note"])
+    else:
+        count = st.slider(
+            T["show_count"], min_value=2,
+            max_value=len(ranking), value=min(10, len(ranking)),
+        )
+        plot = px.bar(
+            ranking.head(count).iloc[::-1],
+            x="passengers", y="airport_name", orientation="h",
+            color_discrete_sequence=[PALETTE[0]],
+            hover_data={"share_pct": True},
+            text="share_pct",
+            labels={
+                "passengers": T["passengers"],
+                "airport_name": T["airport_name"],
+                "share_pct": T["share_pct"],
+            },
+        )
+        plot.update_traces(
+            texttemplate="%{text:.1f}%", textposition="outside",
+            cliponaxis=False,
+        )
+        plot.update_layout(margin=dict(t=45, b=35, l=110, r=70))
+        figure(plot, max(380, count * 37))
     ranking_table = ranking.rename(columns={
         "airport": "IATA",
         "airport_name": T["airport_name"],
