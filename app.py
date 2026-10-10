@@ -57,7 +57,7 @@ PALETTE = ["#2dd4bf", "#38bdf8", "#f59e0b", "#a78bfa", "#fb7185"]
 WORDS = {
     "ar": {
         "title": "تحليلات الطيران السعودي",
-        "subtitle": "لوحة تفاعلية لاستكشاف بيانات الحركة الجوية في المملكة العربية السعودية، 2020–2025",
+        "subtitle": "مؤشرات حركة الطيران وأداء المطارات في المملكة العربية السعودية | 2020–2025",
         "language": "اللغة | Language",
         "navigation": "أقسام لوحة المعلومات",
         "national": "النظرة الوطنية",
@@ -135,7 +135,7 @@ WORDS = {
     },
     "en": {
         "title": "Saudi Aviation Analytics",
-        "subtitle": "An interactive exploration of Saudi Arabian air-traffic data, 2020–2025",
+        "subtitle": "Air Traffic Indicators and Airport Performance in Saudi Arabia | 2020–2025",
         "language": "Language | اللغة",
         "navigation": "Dashboard sections",
         "national": "National Overview",
@@ -371,7 +371,7 @@ except (sqlite3.Error, ValueError, KeyError) as error:
     st.stop()
 
 with st.sidebar:
-    st.markdown("### ✈️ Aviation Hub")
+    st.markdown("### ✈️ تحليلات الطيران" if RTL else "### ✈️ Aviation Hub")
     page = st.radio(
         T["navigation"],
         ["national", "airports", "monthly", "quality"],
