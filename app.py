@@ -80,6 +80,15 @@ WORDS = {
         "no_results": "لا توجد نتائج مطابقة للفلاتر المحددة.",
         "national_title": "المؤشرات الوطنية",
         "indicator_year": "سنة المؤشرات",
+        "kpi_scope": "تعرض المؤشرات أعلاه جميع المطارات المطابقة للفلاتر في عام {year}، وعددها {airports} مطارًا.",
+        "insight_heading": "قراءة تحليلية مختصرة",
+        "trend_up": "ارتفع مؤشر {metric} بنسبة {pct}%",
+        "trend_down": "انخفض مؤشر {metric} بنسبة {pct}%",
+        "trend_flat": "استقر مؤشر {metric} تقريبًا",
+        "insight_comparison": "بين عامي 2024 و2025، وضمن المطارات القابلة للمقارنة فقط، {passenger_statement}، بينما {movement_statement}.",
+        "insight_best_airport": "تصدّر مطار {airport} ترتيب المسافرين في عام {year} بحصة {pct}% من إجمالي المسافرين ضمن الفلاتر الحالية.",
+        "insight_single_airport": "تقتصر بيانات عام {year} بعد التصفية على مطار {airport}؛ لذا لا تتوفر مقارنة بين مطارات مختلفة.",
+        "insight_no_comparison": "لا تتوفر بيانات كافية لاحتساب تغير 2024–2025 بصورة متسقة للمطارات المحددة.",
         "passengers": "المسافرون",
         "movements": "حركات الطيران",
         "airports_count": "عدد المطارات",
@@ -96,11 +105,12 @@ WORDS = {
         "national_growth_title": "مقارنة الأداء بين 2024 و2025",
         "passenger_yoy_kpi": "تغير أعداد المسافرين",
         "movement_yoy_kpi": "تغير حركات الطيران",
-        "national_growth_note": "مقارنة استكشافية حسب الفلاتر المختارة، وتشمل {airports} مطارًا تتوفر لها سجلات في جميع أشهر 2024 و2025. اكتمال الأشهر لا يضمن اكتمال كل الفئات التشغيلية.",
+        "national_growth_note": "يختلف نطاق هذه المقارنة عن مؤشرات السنة أعلاه: تحسب النسب من نفس المطارات المتاحة في العامين فقط ({airports} مطارًا لديه سجلات في الأشهر الـ12 من 2024 و2025) مع تطبيق الفلاتر الحالية. وجود سجل شهري لا يعني اكتمال الفئات التشغيلية.",
         "type_comparison_title": "المسافرون حسب نوع الرحلة",
         "official_source_link": "مكتبة البيانات المفتوحة — الهيئة العامة للطيران المدني",
         "airport_name": "المطار",
         "show_count": "عدد المطارات المعروضة",
+        "two_airports_note": "يعرض الرسم المطارين المتاحين للمقارنة.",
         "share_pct": "حصة المسافرين (%)",
         "download_ranking": "تحميل ترتيب المطارات CSV",
         "airport_comparison": "مقارنة المطارات: 2024 و2025",
@@ -158,6 +168,15 @@ WORDS = {
         "no_results": "No data matches the selected filters.",
         "national_title": "National Overview",
         "indicator_year": "Indicator year",
+        "kpi_scope": "The indicators above include all {airports} airports matching the filters in {year}.",
+        "insight_heading": "Brief Analytical Insights",
+        "trend_up": "the {metric} indicator increased by {pct}%",
+        "trend_down": "the {metric} indicator decreased by {pct}%",
+        "trend_flat": "the {metric} indicator was broadly unchanged",
+        "insight_comparison": "Among airports comparable across 2024 and 2025, {passenger_statement}, while {movement_statement}.",
+        "insight_best_airport": "{airport} recorded the highest passenger count in {year}, accounting for {pct}% of passengers within the active filters.",
+        "insight_single_airport": "After filtering, only {airport} has records in {year}; an airport-to-airport comparison is not available.",
+        "insight_no_comparison": "Not enough consistently scoped 2024–2025 data is available for the selected airports.",
         "passengers": "Passengers",
         "movements": "Flight Movements",
         "airports_count": "Airports",
@@ -174,11 +193,12 @@ WORDS = {
         "national_growth_title": "Performance Comparison: 2024 vs 2025",
         "passenger_yoy_kpi": "Passenger change",
         "movement_yoy_kpi": "Flight movement change",
-        "national_growth_note": "Exploratory comparison based on the active filters, covering {airports} airports with records for all twelve months of 2024 and 2025. Monthly presence does not guarantee complete category coverage.",
+        "national_growth_note": "The comparison differs from the annual KPI cards above: growth is calculated only for the same airports in both years ({airports} airports with records in all 12 months of 2024 and 2025), subject to active filters. Monthly records do not guarantee complete category coverage.",
         "type_comparison_title": "Passengers by Flight Type",
         "official_source_link": "GACA Open Data Library",
         "airport_name": "Airport",
         "show_count": "Airports to display",
+        "two_airports_note": "Both available airports are displayed in the comparison chart.",
         "share_pct": "Passenger share (%)",
         "download_ranking": "Download airport rankings CSV",
         "airport_comparison": "Airport Comparison: 2024 vs 2025",
@@ -251,6 +271,15 @@ def render_kpis(items):
         '<div class="kpi-grid">' + "".join(cards) + "</div>",
         unsafe_allow_html=True,
     )
+
+
+def trend_statement(metric, rate):
+    """Return a concise, localized summary of an observed percentage change."""
+    if rate > 0.005:
+        return T["trend_up"].format(metric=metric, pct=f"{rate:.2f}")
+    if rate < -0.005:
+        return T["trend_down"].format(metric=metric, pct=f"{abs(rate):.2f}")
+    return T["trend_flat"].format(metric=metric)
 
 
 def figure(fig, height=410):
@@ -445,6 +474,12 @@ if page == "national":
             if current.flights else "—",
         ),
     ])
+    st.caption(
+        T["kpi_scope"].format(
+            year=selected_year, airports=int(current.airports)
+        )
+    )
+    insight_parts = []
 
     # Year-over-year comparison only for airports with monthly records
     # in all 12 months of both comparison years.
@@ -487,6 +522,42 @@ if page == "national":
                     airports=int(comparable.airport.nunique())
                 )
             )
+            insight_parts.append(
+                T["insight_comparison"].format(
+                    passenger_statement=trend_statement(
+                        T["passengers"], passenger_change
+                    ),
+                    movement_statement=trend_statement(
+                        T["movements"], movement_change
+                    ),
+                )
+            )
+        else:
+            insight_parts.append(T["insight_no_comparison"])
+
+    airport_passengers = (
+        filtered[filtered.year == selected_year]
+        .groupby("airport").passengers.sum()
+        .sort_values(ascending=False)
+    )
+    if len(airport_passengers) > 1 and airport_passengers.sum() > 0:
+        insight_parts.append(
+            T["insight_best_airport"].format(
+                airport=airport_label(airport_passengers.index[0]),
+                year=selected_year,
+                pct=f"{100 * airport_passengers.iloc[0] / airport_passengers.sum():.1f}",
+            )
+        )
+    elif len(airport_passengers) == 1:
+        insight_parts.append(
+            T["insight_single_airport"].format(
+                airport=airport_label(airport_passengers.index[0]),
+                year=selected_year,
+            )
+        )
+    if insight_parts:
+        st.markdown(f"#### {T['insight_heading']}")
+        info_note(" ".join(insight_parts))
 
     left, right = st.columns(2)
     with left:
@@ -563,15 +634,20 @@ elif page == "airports":
         if total_passengers else 0
     ).round(2)
     if len(ranking) < 2:
-        # Streamlit sliders require min_value < max_value.
-        # A single airport may still be inspected in the table below.
+        # There is no second airport to compare; preserve the single-airport table.
         st.info(T["select_two_airports"])
         st.caption(T["one_airport_note"])
+        count = None
+    elif len(ranking) == 2:
+        # A slider with min_value == max_value raises StreamlitInvalidMinMaxError.
+        count = 2
+        st.caption(T["two_airports_note"])
     else:
         count = st.slider(
             T["show_count"], min_value=2,
             max_value=len(ranking), value=min(10, len(ranking)),
         )
+    if count is not None:
         plot = px.bar(
             ranking.head(count).iloc[::-1],
             x="passengers", y="airport_name", orientation="h",
