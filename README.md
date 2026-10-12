@@ -12,6 +12,12 @@
 
 **Saudi Aviation Analytics** is a data analytics project exploring air traffic across airports in Saudi Arabia from **2020 to 2025**. The interactive dashboard examines passenger volumes, flight movements, airport performance, and time-based trends using **SQL, Python, Pandas, Plotly, and Streamlit**.
 
+## Forecasting / التنبؤ بالسلاسل الزمنية
+
+The independent **[Time Series Forecasting & Analytics](forecasting/README.md)** section contains the Python forecasting workflow, the monthly 2023–2025 dataset, model validation, and instructions for exporting to Power BI. It is separate from the Streamlit dashboard.
+
+يتضمن قسم **[التنبؤ بالسلاسل الزمنية](forecasting/README.md)** أكواد Python وبيانات 2023–2025 الشهرية ومقارنة النماذج وتجهيز ملفات Power BI، دون تعديل لوحة المعلومات السابقة.
+
 ## Dashboard Features
 
 - **National overview:** Total passenger, flight-movement, and airport indicators.
