@@ -4,6 +4,7 @@ import sqlite3
 
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import streamlit as st
 
 st.set_page_config(
@@ -64,6 +65,25 @@ WORDS = {
         "airports": "أداء المطارات",
         "monthly": "الحركة الشهرية",
         "quality": "جودة البيانات",
+        "forecasting": "التنبؤ بحركة الطيران",
+        "forecast_title": "التنبؤ بأعداد المسافرين | 2026",
+        "forecast_scope": "توقعات استكشافية لإجمالي أعداد المسافرين في المملكة، بُنيت على البيانات الشهرية من يناير 2023 إلى ديسمبر 2025. فلاتر المطارات ونوع الرحلة واتجاهها لا تنطبق على هذه التوقعات.",
+        "forecast_actual": "المسافرون الفعليون 2025",
+        "forecast_ets": "توقع ETS لعام 2026",
+        "forecast_sarima": "توقع SARIMA لعام 2026",
+        "forecast_growth": "النمو المتوقع مقارنة بـ2025",
+        "forecast_models": "النماذج المعروضة",
+        "forecast_history": "البيانات الفعلية",
+        "forecast_ci": "نطاق تنبؤ SARIMA بنسبة 95%",
+        "forecast_model_ets": "توقع ETS",
+        "forecast_model_sarima": "توقع SARIMA",
+        "forecast_date": "الشهر",
+        "forecast_lower": "الحد الأدنى 95%",
+        "forecast_upper": "الحد الأعلى 95%",
+        "forecast_download": "تحميل توقعات 2026 CSV",
+        "forecast_methods": "مقارنة أداء النماذج على أشهر 2025",
+        "forecast_note": "النماذج دُربت على 2023–2024 واختُبرت على 2025، ثم أُعيد تدريبها على جميع أشهر 2023–2025 للتنبؤ بعام 2026. فترات التنبؤ مشروطة بافتراضات SARIMA ولا تشمل جميع مصادر عدم اليقين. محدودية 36 شهرًا وتفاوت تغطية المطارات (27–29) قد يؤثران على الدقة. هذه ليست بيانات فعلية لعام 2026 أو توقعات رسمية.",
+        "forecast_missing": "ملفات التنبؤ غير متاحة حاليًا داخل مجلد forecasting.",
         "filters": "فلاتر البيانات",
         "airport_filter": "المطارات",
         "all_airports": "جميع المطارات",
@@ -152,6 +172,25 @@ WORDS = {
         "airports": "Airport Performance",
         "monthly": "Monthly Trends",
         "quality": "Data Quality",
+        "forecasting": "Forecasting",
+        "forecast_title": "Passenger Forecast | 2026",
+        "forecast_scope": "Exploratory forecasts of total passenger traffic across Saudi Arabia, using monthly observations from January 2023 through December 2025. Airport, flight type and direction filters do not apply to this forecast.",
+        "forecast_actual": "Actual passengers in 2025",
+        "forecast_ets": "2026 ETS forecast",
+        "forecast_sarima": "2026 SARIMA forecast",
+        "forecast_growth": "Expected growth from 2025",
+        "forecast_models": "Models to display",
+        "forecast_history": "Actual observations",
+        "forecast_ci": "SARIMA 95% prediction interval",
+        "forecast_model_ets": "ETS forecast",
+        "forecast_model_sarima": "SARIMA forecast",
+        "forecast_date": "Month",
+        "forecast_lower": "95% lower",
+        "forecast_upper": "95% upper",
+        "forecast_download": "Download 2026 forecasts CSV",
+        "forecast_methods": "Model accuracy on the 2025 holdout",
+        "forecast_note": "Models were trained on 2023–2024 and tested on 2025, then refitted on all 2023–2025 months for 2026 projection. Prediction intervals rely on SARIMA assumptions and do not include every source of uncertainty. The short 36-month series and varying airport coverage (27–29 airports) can affect accuracy. These are not observed 2026 results or official forecasts.",
+        "forecast_missing": "Forecasting data files are unavailable in the forecasting folder.",
         "filters": "Data filters",
         "airport_filter": "Airports",
         "all_airports": "All airports",
@@ -429,30 +468,36 @@ with st.sidebar:
     st.markdown("### ✈️ تحليلات الطيران" if RTL else "### ✈️ Aviation Hub")
     page = st.radio(
         T["navigation"],
-        ["national", "airports", "monthly", "quality"],
+        ["national", "airports", "monthly", "forecasting", "quality"],
         format_func=lambda key: T[key],
         key="dashboard_page",
     )
     st.divider()
-    st.markdown(f"#### {T['filters']}")
-    selected_airports = st.multiselect(
-        T["airport_filter"],
-        sorted(data.airport.dropna().unique()),
-        format_func=lambda code: f"{airport_label(code)} ({code})",
-        placeholder=T["all_airports"],
-    )
-    selected_types = st.multiselect(
-        T["type_filter"],
-        ["Domestic", "International"],
-        default=["Domestic", "International"],
-        format_func=lambda value: T["domestic"] if value == "Domestic" else T["international"],
-    )
-    selected_directions = st.multiselect(
-        T["direction_filter"],
-        ["ARRIVAL", "DEPARTURE"],
-        default=["ARRIVAL", "DEPARTURE"],
-        format_func=lambda value: T["arrival"] if value == "ARRIVAL" else T["departure"],
-    )
+    if page != "forecasting":
+        st.markdown(f"#### {T['filters']}")
+        selected_airports = st.multiselect(
+            T["airport_filter"],
+            sorted(data.airport.dropna().unique()),
+            format_func=lambda code: f"{airport_label(code)} ({code})",
+            placeholder=T["all_airports"],
+        )
+        selected_types = st.multiselect(
+            T["type_filter"],
+            ["Domestic", "International"],
+            default=["Domestic", "International"],
+            format_func=lambda value: T["domestic"] if value == "Domestic" else T["international"],
+        )
+        selected_directions = st.multiselect(
+            T["direction_filter"],
+            ["ARRIVAL", "DEPARTURE"],
+            default=["ARRIVAL", "DEPARTURE"],
+            format_func=lambda value: T["arrival"] if value == "ARRIVAL" else T["departure"],
+        )
+    else:
+        # Forecasts represent fixed national totals; avoid showing misleading filters.
+        selected_airports = []
+        selected_types = ["Domestic", "International"]
+        selected_directions = ["ARRIVAL", "DEPARTURE"]
     st.caption(T["source"])
     st.markdown(
         f'[{T["official_source_link"]}](https://www.gaca.gov.sa/ar/Open-Data/OpenDataLibrary)'
@@ -817,6 +862,98 @@ elif page == "monthly":
         "monthly_aviation.csv", mime="text/csv",
     )
     info_note(T["monthly_note"])
+
+elif page == "forecasting":
+    st.subheader(T["forecast_title"])
+    info_note(T["forecast_scope"])
+
+    monthly_path = DB_FILE.parent / "forecasting" / "Saudi_Aviation_Monthly_2023_2025_Forecasting.csv"
+    forecast_path = DB_FILE.parent / "forecasting" / "forecast_2026.csv"
+    if not monthly_path.is_file() or not forecast_path.is_file():
+        st.error(T["forecast_missing"])
+        st.stop()
+    historical = pd.read_csv(monthly_path, parse_dates=["date"])
+    projections = pd.read_csv(forecast_path, parse_dates=["date"])
+    historical = historical.sort_values("date")
+    projections = projections.sort_values("date")
+    actual_2025 = historical.loc[historical["year"] == 2025, "passengers"].sum()
+    ets_total = projections["ETS"].sum()
+    sarima_total = projections["SARIMA"].sum()
+    render_kpis([
+        (T["forecast_actual"], number(actual_2025)),
+        (T["forecast_ets"], number(ets_total)),
+        (T["forecast_sarima"], number(sarima_total)),
+    ])
+    st.caption(
+        f"{T['forecast_growth']}: ETS {((ets_total / actual_2025) - 1) * 100:+.2f}%"
+        f" | SARIMA {((sarima_total / actual_2025) - 1) * 100:+.2f}%"
+    )
+
+    models = st.multiselect(
+        T["forecast_models"], ["ETS", "SARIMA"],
+        default=["ETS", "SARIMA"],
+        format_func=lambda x: T["forecast_model_ets"] if x == "ETS" else T["forecast_model_sarima"],
+    )
+    plot = go.Figure()
+    plot.add_trace(go.Scatter(
+        x=historical["date"], y=historical["passengers"] / 1_000_000,
+        mode="lines+markers", name=T["forecast_history"],
+        line=dict(color="#38bdf8", width=2),
+        marker=dict(size=4),
+    ))
+    if "SARIMA" in models:
+        # Plot upper then lower; fill only the area between their edges.
+        plot.add_trace(go.Scatter(
+            x=projections["date"], y=projections["upper_95"] / 1_000_000,
+            mode="lines", line=dict(width=0), showlegend=False, hoverinfo="skip",
+        ))
+        plot.add_trace(go.Scatter(
+            x=projections["date"], y=projections["lower_95"] / 1_000_000,
+            mode="lines", line=dict(width=0),
+            fill="tonexty", fillcolor="rgba(45,212,191,0.16)",
+            name=T["forecast_ci"], hoverinfo="skip",
+        ))
+        plot.add_trace(go.Scatter(
+            x=projections["date"], y=projections["SARIMA"] / 1_000_000,
+            mode="lines+markers", name=T["forecast_model_sarima"],
+            line=dict(color="#2dd4bf", dash="dash", width=2),
+        ))
+    if "ETS" in models:
+        plot.add_trace(go.Scatter(
+            x=projections["date"], y=projections["ETS"] / 1_000_000,
+            mode="lines+markers", name=T["forecast_model_ets"],
+            line=dict(color="#f59e0b", dash="dash", width=2),
+        ))
+    plot.add_vline(x=pd.Timestamp("2026-01-01").timestamp() * 1000,
+                   line_dash="dot", line_color="#cbd5e1")
+    plot.update_layout(
+        xaxis_title=T["forecast_date"], yaxis_title=f"{T['passengers']} (M)",
+        hovermode="x unified",
+    )
+    figure(plot, height=490)
+
+    display_forecast = projections.copy()
+    display_forecast[T["forecast_date"]] = display_forecast["date"].dt.strftime("%Y-%m")
+    display_forecast = display_forecast.rename(columns={
+        "lower_95": T["forecast_lower"], "upper_95": T["forecast_upper"]
+    })
+    st.dataframe(
+        display_forecast[[T["forecast_date"], "ETS", "SARIMA", T["forecast_lower"], T["forecast_upper"]]],
+        hide_index=True, use_container_width=True,
+    )
+    st.download_button(
+        T["forecast_download"],
+        projections.to_csv(index=False).encode("utf-8-sig"),
+        file_name="Saudi_Aviation_Forecast_2026.csv",
+        mime="text/csv",
+    )
+    st.markdown(f"#### {T['forecast_methods']}")
+    st.dataframe(pd.DataFrame([
+        {"Model": "Seasonal Naive", "MAE": 1_039_704, "RMSE": 1_143_857, "sMAPE (%)": 9.09},
+        {"Model": "ETS", "MAE": 469_123, "RMSE": 616_876, "sMAPE (%)": 4.07},
+        {"Model": "SARIMA", "MAE": 462_533, "RMSE": 592_565, "sMAPE (%)": 4.00},
+    ]), hide_index=True, use_container_width=True)
+    info_note(T["forecast_note"])
 
 else:
     st.subheader(T["quality_title"])
