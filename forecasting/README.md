@@ -4,12 +4,13 @@
 
 ## English
 
-This folder contains a **separate forecasting phase** of the Saudi Aviation Analytics portfolio project. It does not change the existing Streamlit application.
+This folder contains a **separate forecasting phase** of the Saudi Aviation Analytics portfolio project. The same repository's Streamlit dashboard has a separate **Forecasting** page while retaining its existing analysis sections.
 
 ### Contents
 - `forecasting.py` — reproducible Python code for ADF, STL decomposition, 2025 holdout and expanding-window tests, Seasonal Naive / ETS / SARIMA, 2026 forecasts, SARIMA 95% prediction intervals, and CSV exports.
 - `Saudi_Aviation_Monthly_2023_2025_Forecasting.csv` — monthly observations used in the analysis (36 rows, January 2023–December 2025).
 - `requirements.txt` — dependencies.
+- `forecast_2026.csv` — fixed 2026 ETS and SARIMA predictions plus SARIMA 95% intervals, used in the Streamlit forecasting page.
 - `output/` — generated when running the script; contains model scores, backtests and the Power BI-ready file.
 
 ### Run locally
@@ -29,7 +30,7 @@ Forecast intervals are model-based **prediction intervals**, not guarantees. Onl
 
 ## العربية
 
-يحتوي هذا المجلد على **مرحلة التنبؤ بالسلاسل الزمنية** ضمن مشروع تحليلات الطيران السعودي، مع الإبقاء على تطبيق Streamlit السابق دون تعديل.
+يحتوي هذا المجلد على **مرحلة التنبؤ بالسلاسل الزمنية** ضمن مشروع تحليلات الطيران السعودي، وأصبح لها قسم «التنبؤ بحركة الطيران» داخل لوحة Streamlit السابقة دون تغيير الأقسام الأصلية.
 
 يشمل الكود: اختبار ADF، تفكيك STL، مقارنة Seasonal Naive وETS وSARIMA على بيانات 2025، الاختبار المتحرك للشهر التالي، توقعات 2026، فترات التنبؤ 95%، وتصدير ملفات مناسبة لـPower BI.
 
