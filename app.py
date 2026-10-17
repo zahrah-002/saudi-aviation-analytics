@@ -276,7 +276,7 @@ WORDS = {
 with st.sidebar:
     language = st.radio(
         "اللغة | Language",
-        options=["ar", "en"],
+        options=["en", "ar"],
         format_func=lambda x: "العربية" if x == "ar" else "English",
         horizontal=True,
         key="dashboard_language",
