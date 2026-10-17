@@ -331,6 +331,7 @@ def figure(fig, height=410):
         margin=dict(t=45, b=35, l=20, r=20),
         legend=dict(orientation="h", y=1.16),
         hovermode="closest",
+        hoverlabel=dict(font=dict(family="Arial", size=14), align="left"),
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -638,6 +639,10 @@ if page == "national":
             labels={"year": T["year"], "passengers": T["passengers"]},
             color_discrete_sequence=PALETTE,
         )
+        # Separate text and numbers to avoid mixed RTL/LTR Plotly tooltips.
+        plot.update_traces(
+            hovertemplate="%{x}<br>%{y:,.0f}<extra></extra>"
+        )
         figure(plot)
     with right:
         st.markdown(f"#### {T['movement_trend']}")
@@ -645,6 +650,9 @@ if page == "national":
             yearly, x="year", y="flights",
             labels={"year": T["year"], "flights": T["movements"]},
             color_discrete_sequence=[PALETTE[1]],
+        )
+        plot.update_traces(
+            hovertemplate="%{x}<br>%{y:,.0f}<extra></extra>"
         )
         figure(plot)
 
@@ -666,7 +674,8 @@ if page == "national":
         labels={"passengers": T["passengers"], T["type_filter"]: T["type_filter"]},
     )
     type_plot.update_traces(
-        texttemplate="%{text:,.0f}", textposition="outside", cliponaxis=False
+        texttemplate="%{text:,.0f}", textposition="outside", cliponaxis=False,
+        hovertemplate="%{x}<br>%{y:,.0f}<extra></extra>",
     )
     type_plot.update_layout(showlegend=False)
     figure(type_plot, height=340)
