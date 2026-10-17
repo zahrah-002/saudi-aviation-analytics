@@ -322,6 +322,7 @@ def trend_statement(metric, rate):
 
 
 def figure(fig, height=410):
+    # Mobile-friendly hover labels and plot margins, without changing chart data.
     fig.update_layout(
         template="plotly_dark",
         height=height,
@@ -331,9 +332,36 @@ def figure(fig, height=410):
         margin=dict(t=45, b=35, l=20, r=20),
         legend=dict(orientation="h", y=1.16),
         hovermode="closest",
-        hoverlabel=dict(font=dict(family="Arial", size=14), align="left"),
+        hoverlabel=dict(
+            bgcolor="#18304a", bordercolor="#46627c",
+            font=dict(family="Arial", size=13, color="#edf7ff"),
+            align="left",
+        ),
     )
+    fig.update_xaxes(automargin=True)
+    fig.update_yaxes(automargin=True)
     st.plotly_chart(fig, use_container_width=True)
+
+
+def formatted_table(df, percent_columns=()):
+    """Format displayed tables only; preserve numeric data for charts and CSV exports."""
+    shown = df.copy()
+    for column in shown.columns:
+        if not pd.api.types.is_numeric_dtype(shown[column]):
+            shown[column] = shown[column].fillna("—")
+        elif column in percent_columns or "%" in str(column):
+            shown[column] = shown[column].map(
+                lambda value: f"{value:,.2f}" if pd.notna(value) else "—"
+            )
+        elif str(column).lower() in ("year", "السنة", "month_num"):
+            shown[column] = shown[column].map(
+                lambda value: f"{value:.0f}" if pd.notna(value) else "—"
+            )
+        else:
+            shown[column] = shown[column].map(
+                lambda value: f"{value:,.0f}" if pd.notna(value) else "—"
+            )
+    return shown
 
 
 def info_note(message):
@@ -421,6 +449,12 @@ h1,h2,h3 {letter-spacing:-.012em}
   text-align:left !important;
 }
 @media (max-width:600px) {
+  .block-container {padding:1rem .65rem 2rem; max-width:100%}
+  [data-testid="stPlotlyChart"] {width:100%; max-width:100%; overflow:hidden}
+  [data-testid="stPlotlyChart"] > div {max-width:100%}
+  [data-testid="stDataFrame"] {max-width:100%}
+  .stApp h2 {font-size:1.25rem}
+  .stApp h3 {font-size:1.12rem}
   .kpi-grid {grid-template-columns:1fr 1fr; gap:10px}
   .kpi-card {padding:14px 11px; min-height:108px}
   .kpi-value {font-size:clamp(.98rem,3.55vw,1.4rem);letter-spacing:-.04em}
@@ -643,6 +677,7 @@ if page == "national":
         plot.update_traces(
             hovertemplate="%{x}<br>%{y:,.0f}<extra></extra>"
         )
+        plot.update_xaxes(dtick=1, tickformat="d")
         figure(plot)
     with right:
         st.markdown(f"#### {T['movement_trend']}")
@@ -654,6 +689,7 @@ if page == "national":
         plot.update_traces(
             hovertemplate="%{x}<br>%{y:,.0f}<extra></extra>"
         )
+        plot.update_xaxes(dtick=1, tickformat="d")
         figure(plot)
 
     st.markdown(f"#### {T['type_comparison_title']}")
@@ -692,7 +728,9 @@ if page == "national":
         "flights": T["movements"],
         "airports": T["airports_count"],
     })
-    st.dataframe(table, use_container_width=True, hide_index=True)
+    st.dataframe(formatted_table(
+        table, percent_columns=[T["passenger_growth"], T["movement_growth"]]
+    ), use_container_width=True, hide_index=True)
     info_note(T["annual_note"])
 
 elif page == "airports":
@@ -753,7 +791,8 @@ elif page == "airports":
         "flights": T["movements"],
         "share_pct": T["share_pct"],
     })
-    st.dataframe(ranking_table, use_container_width=True, hide_index=True)
+    st.dataframe(formatted_table(ranking_table, percent_columns=[T["share_pct"]]),
+                 use_container_width=True, hide_index=True)
     st.download_button(
         T["download_ranking"],
         ranking_table.to_csv(index=False).encode("utf-8-sig"),
@@ -809,7 +848,8 @@ elif page == "airports":
             .sort_values(T["passenger_diff"], ascending=False)
         )
         st.dataframe(
-            comparison_table, hide_index=True, use_container_width=True
+            formatted_table(comparison_table, percent_columns=[T["growth_pct"]]),
+            hide_index=True, use_container_width=True
         )
         st.download_button(
             T["download_comparison"],
@@ -853,7 +893,12 @@ elif page == "monthly":
     )
     plot.update_xaxes(
         tickmode="array", tickvals=list(range(1, 13)),
-        ticktext=MONTHS_AR if RTL else MONTHS_EN,
+        ticktext=[month[:3] if not RTL else month for month in
+                  (MONTHS_AR if RTL else MONTHS_EN)],
+        tickangle=-35 if RTL else 0,
+    )
+    plot.update_traces(
+        hovertemplate="%{fullData.name}<br>%{x}<br>%{y:,.0f}<extra></extra>"
     )
     figure(plot, height=465)
 
@@ -864,7 +909,8 @@ elif page == "monthly":
     monthly_table = grouped.rename(columns={
         "year": T["year"], metric: metric_label,
     })[[T["year"], T["month"], metric_label]]
-    st.dataframe(monthly_table, hide_index=True, use_container_width=True)
+    st.dataframe(formatted_table(monthly_table),
+                 hide_index=True, use_container_width=True)
     st.download_button(
         T["download_monthly"],
         monthly_table.to_csv(index=False).encode("utf-8-sig"),
@@ -947,7 +993,9 @@ elif page == "forecasting":
         "lower_95": T["forecast_lower"], "upper_95": T["forecast_upper"]
     })
     st.dataframe(
-        display_forecast[[T["forecast_date"], "ETS", "SARIMA", T["forecast_lower"], T["forecast_upper"]]],
+        formatted_table(display_forecast[
+            [T["forecast_date"], "ETS", "SARIMA", T["forecast_lower"], T["forecast_upper"]]
+        ]),
         hide_index=True, use_container_width=True,
     )
     st.download_button(
@@ -957,11 +1005,11 @@ elif page == "forecasting":
         mime="text/csv",
     )
     st.markdown(f"#### {T['forecast_methods']}")
-    st.dataframe(pd.DataFrame([
+    st.dataframe(formatted_table(pd.DataFrame([
         {"Model": "Seasonal Naive", "MAE": 1_039_704, "RMSE": 1_143_857, "sMAPE (%)": 9.09},
         {"Model": "ETS", "MAE": 469_123, "RMSE": 616_876, "sMAPE (%)": 4.07},
         {"Model": "SARIMA", "MAE": 462_533, "RMSE": 592_565, "sMAPE (%)": 4.00},
-    ]), hide_index=True, use_container_width=True)
+    ])), hide_index=True, use_container_width=True)
     info_note(T["forecast_note"])
 
 else:
@@ -987,7 +1035,8 @@ else:
         "missing_passengers": T["missing_passengers"],
         "missing_movements": T["missing_movements"],
     })
-    st.dataframe(quality_table, hide_index=True, use_container_width=True)
+    st.dataframe(formatted_table(quality_table),
+                 hide_index=True, use_container_width=True)
     st.markdown(f"#### {T['coverage_title']}")
     coverage = (
         data[data.year.isin([2024, 2025]) & data.month_num.notna()]
@@ -1002,5 +1051,6 @@ else:
         2024: T["months_2024"],
         2025: T["months_2025"],
     })[["IATA", T["airport_name"], T["months_2024"], T["months_2025"]]]
-    st.dataframe(coverage_table, hide_index=True, use_container_width=True)
+    st.dataframe(formatted_table(coverage_table),
+                 hide_index=True, use_container_width=True)
     info_note(T["quality_note"])
