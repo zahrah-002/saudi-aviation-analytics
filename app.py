@@ -1032,18 +1032,16 @@ elif page == "forecasting":
 
     st.markdown(f"#### {T['forecast_methods']}")
     performance_path = DB_FILE.parent / "forecasting" / "model_performance_2025.csv"
-    if performance_path.is_file():
-        model_performance = pd.read_csv(performance_path)
-        model_performance = model_performance.rename(columns={"model": "Model", "sMAPE_pct": "sMAPE (%)"})
-    else:
-        # Preserve the previously published evaluation results as a fallback.
-        model_performance = pd.DataFrame([
-            {"Model": "Seasonal Naive", "MAE": 1_039_704, "RMSE": 1_143_857, "sMAPE (%)": 9.09},
-            {"Model": "ETS", "MAE": 469_123, "RMSE": 616_876, "sMAPE (%)": 4.07},
-            {"Model": "SARIMA", "MAE": 462_533, "RMSE": 592_565, "sMAPE (%)": 4.00},
-        ])
-    model_performance = model_performance.sort_values("sMAPE (%)")
-    model_performance = model_performance.rename(columns={"Model": T["forecast_model_label"]})
+    if not performance_path.is_file():
+        st.error(T["forecast_missing"])
+        st.stop()
+    model_performance = pd.read_csv(performance_path)
+    model_performance = model_performance.rename(columns={
+        "model": T["forecast_model_label"], "sMAPE_pct": "sMAPE (%)",
+    })
+    model_performance = model_performance[
+        [T["forecast_model_label"], "MAE", "RMSE", "sMAPE (%)"]
+    ].sort_values("sMAPE (%)")
     metric = st.selectbox(T["forecast_metric"], ["sMAPE (%)", "RMSE", "MAE"])
     perf_plot = go.Figure(go.Bar(
         x=model_performance[T["forecast_model_label"]], y=model_performance[metric],
