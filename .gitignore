@@ -1,0 +1,25 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local environments and editor settings
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+
+# Generated forecasting results (source datasets and committed forecasts stay tracked)
+forecasting/output/
+
+# Local Streamlit configuration and credentials
+.streamlit/secrets.toml
+
+# OS files
+.DS_Store
+Thumbs.db
