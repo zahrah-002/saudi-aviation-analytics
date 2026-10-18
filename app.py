@@ -82,6 +82,10 @@ WORDS = {
         "forecast_upper": "الحد الأعلى 95%",
         "forecast_download": "تحميل توقعات 2026 CSV",
         "forecast_methods": "مقارنة أداء النماذج على أشهر 2025",
+        "forecast_comparison_chart": "البيانات الفعلية مقابل التوقعات | 2023–2026",
+        "forecast_interval_chart": "توقع SARIMA ونطاق التنبؤ 95% | 2026",
+        "forecast_metric": "مؤشر تقييم النموذج",
+        "forecast_metric_download": "تحميل نتائج تقييم النماذج CSV",
         "forecast_note": "تمت ملاءمة نماذج التنبؤ باستخدام بيانات 2023–2024، وتقييم أدائها على بيانات عام 2025، ثم أُعيدت ملاءمتها باستخدام جميع البيانات الشهرية للفترة 2023–2025 لإنتاج توقعات عام 2026. تعتمد فترات التنبؤ على افتراضات نموذج SARIMA ولا تشمل جميع مصادر عدم اليقين. كما أن محدودية السلسلة الزمنية إلى 36 شهرًا وتفاوت تغطية المطارات (27–29 مطارًا) قد يؤثران في دقة التوقعات. نتائج 2026 توقعات إحصائية غير رسمية وليست بيانات فعلية مرصودة.",
         "forecast_missing": "ملفات التنبؤ غير متاحة حاليًا داخل مجلد forecasting.",
         "filters": "فلاتر البيانات",
@@ -189,6 +193,10 @@ WORDS = {
         "forecast_upper": "95% upper",
         "forecast_download": "Download 2026 forecasts CSV",
         "forecast_methods": "Model accuracy on the 2025 holdout",
+        "forecast_comparison_chart": "Actual vs Forecast | 2023–2026",
+        "forecast_interval_chart": "SARIMA Forecast and 95% Prediction Interval | 2026",
+        "forecast_metric": "Model evaluation metric",
+        "forecast_metric_download": "Download model performance CSV",
         "forecast_note": "Models were fitted to 2023–2024 data and evaluated on 2025, then refitted on all 2023–2025 months for 2026 projection. Prediction intervals rely on SARIMA assumptions and do not include every source of uncertainty. The short 36-month series and varying airport coverage (27–29 airports) can affect accuracy. These are not observed 2026 results or official forecasts.",
         "forecast_missing": "Forecasting data files are unavailable in the forecasting folder.",
         "filters": "Data filters",
@@ -944,6 +952,7 @@ elif page == "forecasting":
         f" | SARIMA {((sarima_total / actual_2025) - 1) * 100:+.2f}%"
     )
 
+    st.markdown(f"#### {T['forecast_comparison_chart']}")
     models = st.multiselect(
         T["forecast_models"], ["ETS", "SARIMA"],
         default=["ETS", "SARIMA"],
@@ -1004,12 +1013,74 @@ elif page == "forecasting":
         file_name="Saudi_Aviation_Forecast_2026.csv",
         mime="text/csv",
     )
+    # Separate interactive prediction-interval chart, matching the Power BI analysis.
+    st.markdown(f"#### {T['forecast_interval_chart']}")
+    interval_plot = go.Figure()
+    interval_plot.add_trace(go.Scatter(
+        x=projections["date"], y=projections["upper_95"] / 1_000_000,
+        mode="lines", name=T["forecast_upper"],
+        line=dict(color="#93aecd", width=1.5, dash="dot"),
+        hovertemplate="%{x|%b %Y}<br>%{y:,.2f}M<extra></extra>",
+    ))
+    interval_plot.add_trace(go.Scatter(
+        x=projections["date"], y=projections["lower_95"] / 1_000_000,
+        mode="lines", name=T["forecast_lower"],
+        line=dict(color="#93aecd", width=1.5, dash="dot"),
+        fill="tonexty", fillcolor="rgba(147,174,205,0.16)",
+        hovertemplate="%{x|%b %Y}<br>%{y:,.2f}M<extra></extra>",
+    ))
+    interval_plot.add_trace(go.Scatter(
+        x=projections["date"], y=projections["SARIMA"] / 1_000_000,
+        mode="lines+markers", name=T["forecast_model_sarima"],
+        line=dict(color="#2dd4bf", width=2.5), marker=dict(size=5),
+        hovertemplate="%{x|%b %Y}<br>%{y:,.2f}M<extra></extra>",
+    ))
+    interval_plot.update_layout(
+        xaxis_title=T["forecast_date"],
+        yaxis_title=f"{T['passengers']} (M)", hovermode="x unified",
+    )
+    figure(interval_plot, height=425)
+
     st.markdown(f"#### {T['forecast_methods']}")
-    st.dataframe(formatted_table(pd.DataFrame([
-        {"Model": "Seasonal Naive", "MAE": 1_039_704, "RMSE": 1_143_857, "sMAPE (%)": 9.09},
-        {"Model": "ETS", "MAE": 469_123, "RMSE": 616_876, "sMAPE (%)": 4.07},
-        {"Model": "SARIMA", "MAE": 462_533, "RMSE": 592_565, "sMAPE (%)": 4.00},
-    ])), hide_index=True, use_container_width=True)
+    performance_path = DB_FILE.parent / "forecasting" / "model_performance_2025.csv"
+    if performance_path.is_file():
+        model_performance = pd.read_csv(performance_path)
+        model_performance = model_performance.rename(columns={"model": "Model", "sMAPE_pct": "sMAPE (%)"})
+    else:
+        # Preserve the previously published evaluation results as a fallback.
+        model_performance = pd.DataFrame([
+            {"Model": "Seasonal Naive", "MAE": 1_039_704, "RMSE": 1_143_857, "sMAPE (%)": 9.09},
+            {"Model": "ETS", "MAE": 469_123, "RMSE": 616_876, "sMAPE (%)": 4.07},
+            {"Model": "SARIMA", "MAE": 462_533, "RMSE": 592_565, "sMAPE (%)": 4.00},
+        ])
+    model_performance = model_performance.sort_values("sMAPE (%)")
+    metric = st.selectbox(T["forecast_metric"], ["sMAPE (%)", "RMSE", "MAE"])
+    perf_plot = go.Figure(go.Bar(
+        x=model_performance["Model"], y=model_performance[metric],
+        marker_color=["#2dd4bf" if m == "SARIMA" else "#f59e0b" if m == "ETS"
+                      else "#94a3b8" for m in model_performance["Model"]],
+        text=[f"{v:,.2f}%" if metric == "sMAPE (%)" else f"{v:,.0f}"
+              for v in model_performance[metric]],
+        textposition="outside", cliponaxis=False,
+        hovertemplate="%{x}<br>%{y:,.2f}<extra></extra>" if metric == "sMAPE (%)"
+                      else "%{x}<br>%{y:,.0f}<extra></extra>",
+    ))
+    perf_plot.update_layout(
+        xaxis_title="Model", yaxis_title=metric,
+        yaxis=dict(range=[0, float(model_performance[metric].max()) * 1.18]),
+        showlegend=False,
+    )
+    figure(perf_plot, height=370)
+    st.dataframe(
+        formatted_table(model_performance, percent_columns=("sMAPE (%)",)),
+        hide_index=True, use_container_width=True,
+    )
+    st.download_button(
+        T["forecast_metric_download"],
+        model_performance.to_csv(index=False).encode("utf-8-sig"),
+        file_name="Saudi_Aviation_Model_Performance_2025.csv",
+        mime="text/csv",
+    )
     info_note(T["forecast_note"])
 
 else:
