@@ -1,46 +1,46 @@
-# Saudi Aviation | Time Series Forecasting & Analytics
+# Saudi Aviation | Time Series Forecasting
 
-[English](#english) · [العربية](#arabic)
+[English](#english) · [العربية](#arabic) · **[Open Interactive Dashboard](https://saudi-aviation-analytics-zahrah.streamlit.app/)**
+
+<a id="english"></a>
 
 ## English
 
-This folder contains a **separate forecasting phase** of the Saudi Aviation Analytics portfolio project. The same repository's Streamlit dashboard has a separate **Forecasting** page while retaining its existing analysis sections.
+Passenger forecasting for **2026** using monthly observations from **January 2023–December 2025**. The interactive charts are integrated into the **Forecasting** section of the Streamlit application; no separate HTML viewer is required.
 
-### Contents
-- `forecasting.py` — reproducible Python code for ADF, STL decomposition, 2025 holdout and expanding-window tests, Seasonal Naive / ETS / SARIMA, 2026 forecasts, SARIMA 95% prediction intervals, and CSV exports.
-- `Saudi_Aviation_Monthly_2023_2025_Forecasting.csv` — monthly observations used in the analysis (36 rows, January 2023–December 2025).
-- `requirements.txt` — dependencies.
-- `forecast_2026.csv` — fixed 2026 ETS and SARIMA predictions plus SARIMA 95% intervals, used in the Streamlit forecasting page.
-- [`Saudi_Aviation_PowerBI_Forecasting.csv`](Saudi_Aviation_PowerBI_Forecasting.csv) — 60 rows for Power BI: 36 actual monthly observations (2023–2025), plus 12 ETS and 12 SARIMA monthly projections (2026), with SARIMA prediction interval bounds.
-- [`model_performance_2025.csv`](model_performance_2025.csv) — SARIMA, ETS and Seasonal Naive evaluation metrics (sMAPE, RMSE and MAE) for the fixed 2025 holdout.
-- [`interactive_charts.html`](interactive_charts.html) — three interactive Plotly charts (actual vs forecasts, SARIMA 95% prediction interval, model sMAPE comparison). Download the HTML file and open it in a browser; GitHub's file preview does not execute HTML.
-- `output/` — generated when running the script; contains model scores, backtests and the Power BI-ready file.
+### Files
 
-### Run locally
-From the repository root:
+| File | Purpose |
+| --- | --- |
+| [`forecasting.py`](forecasting.py) | ADF, STL, 2025 holdout and rolling evaluation, ETS/SARIMA forecasts |
+| [`Saudi_Aviation_Monthly_2023_2025_Forecasting.csv`](Saudi_Aviation_Monthly_2023_2025_Forecasting.csv) | 36 monthly historical observations |
+| [`forecast_2026.csv`](forecast_2026.csv) | ETS and SARIMA projections, plus SARIMA 95% prediction intervals |
+| [`Saudi_Aviation_PowerBI_Forecasting.csv`](Saudi_Aviation_PowerBI_Forecasting.csv) | 60 rows: 36 historical months and 24 model-specific forecast rows |
+| [`model_performance_2025.csv`](model_performance_2025.csv) | Fixed 12-month holdout errors for the three models |
+| `requirements.txt` | Forecasting dependencies |
 
+### Method
+Models are fitted on **2023–2024**, evaluated against **2025**, and refitted on **2023–2025** to forecast 2026. Methods include Seasonal Naive, additive ETS and SARIMA `(2,1,0)(1,0,0,12)`. Evaluation uses **MAE, RMSE and sMAPE**.
+
+To reproduce from the repository root:
 ```bash
 pip install -r forecasting/requirements.txt
 python forecasting/forecasting.py
 ```
+Output files are written to `forecasting/output/` locally.
 
-To run in **Google Colab**, upload `forecasting.py` and the CSV into the same directory, install the dependencies, and run `%run forecasting.py`.
+**Interpretation:** These are unofficial statistical forecasts, not observed 2026 passenger totals. The 95% prediction intervals depend on SARIMA assumptions. With only 36 months of data and varying airport coverage, uncertainty is material. **Do not add ETS and SARIMA rows together** when calculating annual totals in Power BI.
 
-### Methods and interpretation
-Training: January 2023–December 2024. Holdout: January–December 2025. The fixed SARIMA specification is `(2,1,0)(1,0,0,12)` and ETS has additive trend/seasonality. Rolling one-month-ahead evaluation differs from the fixed 12-month forecast test. The final model forecasts 2026 after training on all 36 months.
+---
 
-Forecast intervals are model-based **prediction intervals**, not guarantees. Only 3 years of monthly data are available. The `airports_with_records` field varies (27–29) and even month-complete source files need not capture every operational category; 2022 is annual-only and excluded from monthly fitting. These projections are not official forecasts. **2026 forecast values must never be presented as actual observations.** Do not sum ETS and SARIMA scenario rows into one 2026 total in Power BI.
+<a id="arabic"></a>
 
 ## العربية
 
-يحتوي هذا المجلد على **مرحلة التنبؤ بالسلاسل الزمنية** ضمن مشروع تحليلات الطيران السعودي، وأصبح لها قسم «التنبؤ بحركة الطيران» داخل لوحة Streamlit السابقة دون تغيير الأقسام الأصلية.
+يعرض هذا القسم توقعات أعداد المسافرين لعام **2026** باستخدام 36 مشاهدة شهرية خلال **2023–2025**. الرسوم التفاعلية متاحة مباشرة في قسم **Forecasting** داخل لوحة Streamlit، دون الحاجة إلى ملف HTML منفصل.
 
-يشمل الكود: اختبار ADF، تفكيك STL، مقارنة Seasonal Naive وETS وSARIMA على بيانات 2025، الاختبار المتحرك للشهر التالي، توقعات 2026، فترات التنبؤ 95%، وتصدير ملفات مناسبة لـPower BI.
+**ملفات المشروع:** يحتوي المجلد على كود `forecasting.py`، والبيانات الشهرية التاريخية، وتوقعات النموذجين لعام 2026، وملف CSV مناسب لـPower BI، ونتائج مقارنة دقة النماذج على اختبار 2025. روابط الملفات موضحة في الجدول أعلاه.
 
-**الرسوم التفاعلية:** يتوفر ملف [`interactive_charts.html`](interactive_charts.html) ويحتوي على ثلاثة رسوم تفاعلية مستقلة دون استخدام صورة الداشبورد. لتنشيط التفاعل، نزّلي ملف HTML وافتحيه في المتصفح؛ معاينة GitHub لا تشغّل صفحات HTML.
+**المنهجية:** تمت ملاءمة النماذج باستخدام بيانات 2023–2024 وتقييمها على 2025، ثم إعادة ملاءمتها ببيانات 2023–2025 لتوقع 2026. تشمل النماذج Seasonal Naive وETS وSARIMA، ومقاييس التقييم MAE وRMSE وsMAPE.
 
-**ملفات Power BI:** يتوفر ملف [`Saudi_Aviation_PowerBI_Forecasting.csv`](Saudi_Aviation_PowerBI_Forecasting.csv) الذي يجمع 36 شهرًا من البيانات الفعلية (2023–2025) مع توقعات النموذجين لعام 2026 (24 صفًا)، بالإضافة إلى [`model_performance_2025.csv`](model_performance_2025.csv) لمقارنة أداء النماذج على بيانات اختبار 2025. لا تُجمع توقعات ETS وSARIMA معًا عند حساب إجمالي 2026.
-
-**التنفيذ:** تثبيت المكتبات من `forecasting/requirements.txt` ثم تشغيل `python forecasting/forecasting.py` من جذر المستودع.
-
-**تنبيه منهجي:** تتوفر 36 مشاهدة شهرية من 2023 إلى 2025، مع تفاوت عدد المطارات التي لها سجلات. بيانات 2022 سنوية ولا تدخل النمذجة الشهرية. جميع أرقام 2026 توقعات استكشافية وليست نتائج رسمية فعلية، ويجب الفصل بين سيناريوهَي ETS وSARIMA في Power BI.
+**ملاحظة:** النتائج توقعات إحصائية غير رسمية، وليست أعدادًا فعلية لعام 2026. تعتمد فترة التنبؤ بنسبة 95% على افتراضات SARIMA، وقد يؤثر قصر السلسلة واختلاف تغطية المطارات في الدقة. يجب عدم جمع توقعات ETS وSARIMA عند حساب الإجمالي السنوي في Power BI.
