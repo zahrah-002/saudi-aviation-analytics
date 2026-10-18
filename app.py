@@ -67,26 +67,27 @@ WORDS = {
         "quality": "جودة البيانات",
         "forecasting": "التنبؤ بحركة الطيران",
         "forecast_title": "التنبؤ بأعداد المسافرين | 2026",
-        "forecast_scope": "توقعات استكشافية لإجمالي أعداد المسافرين في المملكة، بُنيت على البيانات الشهرية من يناير 2023 إلى ديسمبر 2025. فلاتر المطارات ونوع الرحلة واتجاهها لا تنطبق على هذه التوقعات.",
+        "forecast_scope": "توقعات أعداد المسافرين لعام 2026 بناءً على بيانات شهرية من 2023 إلى 2025. التوقعات على مستوى المملكة ولا تتأثر بفلاتر المطارات.",
         "forecast_actual": "المسافرون الفعليون 2025",
         "forecast_ets": "توقع ETS لعام 2026",
         "forecast_sarima": "توقع SARIMA لعام 2026",
         "forecast_growth": "النمو المتوقع مقارنة بـ2025",
         "forecast_models": "النماذج المعروضة",
         "forecast_history": "البيانات الفعلية",
-        "forecast_ci": "نطاق تنبؤ SARIMA بنسبة 95%",
+        "forecast_ci": "فترة تنبؤ SARIMA بنسبة 95%",
         "forecast_model_ets": "توقع ETS",
         "forecast_model_sarima": "توقع SARIMA",
         "forecast_date": "الشهر",
         "forecast_lower": "الحد الأدنى 95%",
         "forecast_upper": "الحد الأعلى 95%",
         "forecast_download": "تحميل توقعات 2026 CSV",
-        "forecast_methods": "مقارنة أداء النماذج على أشهر 2025",
+        "forecast_methods": "دقة نماذج التنبؤ | اختبار 2025",
+        "forecast_model_label": "النموذج",
         "forecast_comparison_chart": "البيانات الفعلية مقابل التوقعات | 2023–2026",
-        "forecast_interval_chart": "توقع SARIMA ونطاق التنبؤ 95% | 2026",
-        "forecast_metric": "مؤشر تقييم النموذج",
+        "forecast_interval_chart": "توقع SARIMA وفترة التنبؤ 95% | 2026",
+        "forecast_metric": "مقياس الدقة",
         "forecast_metric_download": "تحميل نتائج تقييم النماذج CSV",
-        "forecast_note": "تمت ملاءمة نماذج التنبؤ باستخدام بيانات 2023–2024، وتقييم أدائها على بيانات عام 2025، ثم أُعيدت ملاءمتها باستخدام جميع البيانات الشهرية للفترة 2023–2025 لإنتاج توقعات عام 2026. تعتمد فترات التنبؤ على افتراضات نموذج SARIMA ولا تشمل جميع مصادر عدم اليقين. كما أن محدودية السلسلة الزمنية إلى 36 شهرًا وتفاوت تغطية المطارات (27–29 مطارًا) قد يؤثران في دقة التوقعات. نتائج 2026 توقعات إحصائية غير رسمية وليست بيانات فعلية مرصودة.",
+        "forecast_note": "دُرست دقة النماذج على بيانات 2025 بعد ملاءمتها لبيانات 2023–2024، ثم أُعيدت ملاءمتها بكامل الفترة 2023–2025 لتوقع 2026. فترة التنبؤ بنسبة 95% خاصة بنموذج SARIMA وتعتمد على افتراضاته. السلسلة قصيرة (36 شهرًا) وتغطية المطارات متفاوتة؛ أرقام 2026 توقعات إحصائية غير رسمية وليست أعدادًا فعلية.",
         "forecast_missing": "ملفات التنبؤ غير متاحة حاليًا داخل مجلد forecasting.",
         "filters": "فلاتر البيانات",
         "airport_filter": "المطارات",
@@ -178,7 +179,7 @@ WORDS = {
         "quality": "Data Quality",
         "forecasting": "Forecasting",
         "forecast_title": "Passenger Forecast | 2026",
-        "forecast_scope": "Exploratory forecasts of total passenger traffic across Saudi Arabia, using monthly observations from January 2023 through December 2025. Airport, flight type and direction filters do not apply to this forecast.",
+        "forecast_scope": "2026 passenger forecasts based on monthly data from 2023–2025. These nationwide projections are not affected by airport filters.",
         "forecast_actual": "Actual passengers in 2025",
         "forecast_ets": "2026 ETS forecast",
         "forecast_sarima": "2026 SARIMA forecast",
@@ -192,12 +193,13 @@ WORDS = {
         "forecast_lower": "95% lower",
         "forecast_upper": "95% upper",
         "forecast_download": "Download 2026 forecasts CSV",
-        "forecast_methods": "Model accuracy on the 2025 holdout",
+        "forecast_methods": "Forecast Accuracy | 2025 Evaluation",
+        "forecast_model_label": "Model",
         "forecast_comparison_chart": "Actual vs Forecast | 2023–2026",
         "forecast_interval_chart": "SARIMA Forecast and 95% Prediction Interval | 2026",
-        "forecast_metric": "Model evaluation metric",
+        "forecast_metric": "Accuracy metric",
         "forecast_metric_download": "Download model performance CSV",
-        "forecast_note": "Models were fitted to 2023–2024 data and evaluated on 2025, then refitted on all 2023–2025 months for 2026 projection. Prediction intervals rely on SARIMA assumptions and do not include every source of uncertainty. The short 36-month series and varying airport coverage (27–29 airports) can affect accuracy. These are not observed 2026 results or official forecasts.",
+        "forecast_note": "Models were fitted on 2023–2024, evaluated on 2025, then refitted on the full 2023–2025 series for 2026 projections. The 95% SARIMA prediction interval reflects model assumptions. Only 36 months are available, with varying airport coverage; 2026 values are unofficial statistical forecasts, not observations.",
         "forecast_missing": "Forecasting data files are unavailable in the forecasting folder.",
         "filters": "Data filters",
         "airport_filter": "Airports",
@@ -966,17 +968,6 @@ elif page == "forecasting":
         marker=dict(size=4),
     ))
     if "SARIMA" in models:
-        # Plot upper then lower; fill only the area between their edges.
-        plot.add_trace(go.Scatter(
-            x=projections["date"], y=projections["upper_95"] / 1_000_000,
-            mode="lines", line=dict(width=0), showlegend=False, hoverinfo="skip",
-        ))
-        plot.add_trace(go.Scatter(
-            x=projections["date"], y=projections["lower_95"] / 1_000_000,
-            mode="lines", line=dict(width=0),
-            fill="tonexty", fillcolor="rgba(45,212,191,0.16)",
-            name=T["forecast_ci"], hoverinfo="skip",
-        ))
         plot.add_trace(go.Scatter(
             x=projections["date"], y=projections["SARIMA"] / 1_000_000,
             mode="lines+markers", name=T["forecast_model_sarima"],
@@ -988,8 +979,6 @@ elif page == "forecasting":
             mode="lines+markers", name=T["forecast_model_ets"],
             line=dict(color="#f59e0b", dash="dash", width=2),
         ))
-    plot.add_vline(x=pd.Timestamp("2026-01-01").timestamp() * 1000,
-                   line_dash="dot", line_color="#cbd5e1")
     plot.update_layout(
         xaxis_title=T["forecast_date"], yaxis_title=f"{T['passengers']} (M)",
         hovermode="x unified",
@@ -1054,11 +1043,12 @@ elif page == "forecasting":
             {"Model": "SARIMA", "MAE": 462_533, "RMSE": 592_565, "sMAPE (%)": 4.00},
         ])
     model_performance = model_performance.sort_values("sMAPE (%)")
+    model_performance = model_performance.rename(columns={"Model": T["forecast_model_label"]})
     metric = st.selectbox(T["forecast_metric"], ["sMAPE (%)", "RMSE", "MAE"])
     perf_plot = go.Figure(go.Bar(
-        x=model_performance["Model"], y=model_performance[metric],
+        x=model_performance[T["forecast_model_label"]], y=model_performance[metric],
         marker_color=["#2dd4bf" if m == "SARIMA" else "#f59e0b" if m == "ETS"
-                      else "#94a3b8" for m in model_performance["Model"]],
+                      else "#94a3b8" for m in model_performance[T["forecast_model_label"]]],
         text=[f"{v:,.2f}%" if metric == "sMAPE (%)" else f"{v:,.0f}"
               for v in model_performance[metric]],
         textposition="outside", cliponaxis=False,
@@ -1066,7 +1056,7 @@ elif page == "forecasting":
                       else "%{x}<br>%{y:,.0f}<extra></extra>",
     ))
     perf_plot.update_layout(
-        xaxis_title="Model", yaxis_title=metric,
+        xaxis_title=T["forecast_model_label"], yaxis_title=metric,
         yaxis=dict(range=[0, float(model_performance[metric].max()) * 1.18]),
         showlegend=False,
     )
@@ -1081,7 +1071,8 @@ elif page == "forecasting":
         file_name="Saudi_Aviation_Model_Performance_2025.csv",
         mime="text/csv",
     )
-    info_note(T["forecast_note"])
+    with st.expander(T["forecast_methods"] + " — " + ("المنهجية والملاحظات" if RTL else "Methodology & limitations")):
+        st.write(T["forecast_note"])
 
 else:
     st.subheader(T["quality_title"])
