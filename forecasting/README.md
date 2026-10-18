@@ -13,6 +13,7 @@ This folder contains a **separate forecasting phase** of the Saudi Aviation Anal
 - `forecast_2026.csv` — fixed 2026 ETS and SARIMA predictions plus SARIMA 95% intervals, used in the Streamlit forecasting page.
 - [`Saudi_Aviation_PowerBI_Forecasting.csv`](Saudi_Aviation_PowerBI_Forecasting.csv) — 60 rows for Power BI: 36 actual monthly observations (2023–2025), plus 12 ETS and 12 SARIMA monthly projections (2026), with SARIMA prediction interval bounds.
 - [`model_performance_2025.csv`](model_performance_2025.csv) — SARIMA, ETS and Seasonal Naive evaluation metrics (sMAPE, RMSE and MAE) for the fixed 2025 holdout.
+- [`interactive_charts.html`](interactive_charts.html) — three interactive Plotly charts (actual vs forecasts, SARIMA 95% prediction interval, model sMAPE comparison). Download the HTML file and open it in a browser; GitHub's file preview does not execute HTML.
 - `output/` — generated when running the script; contains model scores, backtests and the Power BI-ready file.
 
 ### Run locally
@@ -35,6 +36,8 @@ Forecast intervals are model-based **prediction intervals**, not guarantees. Onl
 يحتوي هذا المجلد على **مرحلة التنبؤ بالسلاسل الزمنية** ضمن مشروع تحليلات الطيران السعودي، وأصبح لها قسم «التنبؤ بحركة الطيران» داخل لوحة Streamlit السابقة دون تغيير الأقسام الأصلية.
 
 يشمل الكود: اختبار ADF، تفكيك STL، مقارنة Seasonal Naive وETS وSARIMA على بيانات 2025، الاختبار المتحرك للشهر التالي، توقعات 2026، فترات التنبؤ 95%، وتصدير ملفات مناسبة لـPower BI.
+
+**الرسوم التفاعلية:** يتوفر ملف [`interactive_charts.html`](interactive_charts.html) ويحتوي على ثلاثة رسوم تفاعلية مستقلة دون استخدام صورة الداشبورد. لتنشيط التفاعل، نزّلي ملف HTML وافتحيه في المتصفح؛ معاينة GitHub لا تشغّل صفحات HTML.
 
 **ملفات Power BI:** يتوفر ملف [`Saudi_Aviation_PowerBI_Forecasting.csv`](Saudi_Aviation_PowerBI_Forecasting.csv) الذي يجمع 36 شهرًا من البيانات الفعلية (2023–2025) مع توقعات النموذجين لعام 2026 (24 صفًا)، بالإضافة إلى [`model_performance_2025.csv`](model_performance_2025.csv) لمقارنة أداء النماذج على بيانات اختبار 2025. لا تُجمع توقعات ETS وSARIMA معًا عند حساب إجمالي 2026.
 
