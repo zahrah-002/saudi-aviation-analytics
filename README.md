@@ -41,7 +41,7 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-> **Data file status:** The application requires `air_traffic.sqlite`. This file must be added separately to the repository if it is not already present.
+> **Data file status:** The `air_traffic.sqlite` database is included in this repository. It contains processed Saudi aviation traffic data for 2020–2025 and is used directly by the interactive dashboard.
 
 ## Data Source and Methodology
 
@@ -82,7 +82,7 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-> **حالة البيانات:** ملف `air_traffic.sqlite` مطلوب لتشغيل اللوحة، ويُضاف بصورة منفصلة إلى المستودع عند عدم توفره.
+> **حالة البيانات:** تتوفر قاعدة بيانات `air_traffic.sqlite` ضمن المستودع، وتحتوي على بيانات حركة الطيران السعودي المجمّعة للفترة 2020–2025، وتُستخدم مباشرة في تشغيل لوحة المعلومات التفاعلية.
 
 ## مصدر البيانات والمنهجية
 
