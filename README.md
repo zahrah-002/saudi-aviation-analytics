@@ -1,99 +1,69 @@
 # Saudi Aviation Analytics | تحليلات الطيران السعودي
 
-[English](#english-section) · [العربية](#arabic-section)
+[English](#english) · [العربية](#arabic)
 
-**[Live Interactive Dashboard](https://saudi-aviation-analytics-zahrah.streamlit.app/)** · **[Forecasting Analysis](forecasting/README.md)** · **[GACA Open Data](https://www.gaca.gov.sa/ar/Open-Data/OpenDataLibrary)**
-
-**[لوحة المعلومات التفاعلية](https://saudi-aviation-analytics-zahrah.streamlit.app/)** · **[تحليل التنبؤ](forecasting/README.md)** · **[مصدر البيانات الرسمي](https://www.gaca.gov.sa/ar/Open-Data/OpenDataLibrary)**
-
-> **Dashboard preview:** Open the live Streamlit dashboard using the link above. Power BI forecasting visuals are a separate portfolio deliverable; no public interactive Power BI report is linked here.
+**[Live Dashboard](https://saudi-aviation-analytics-zahrah.streamlit.app/)** · **[Forecasting & Results](forecasting/README.md)** · **[GACA Open Data](https://www.gaca.gov.sa/ar/Open-Data/OpenDataLibrary)**
 
 ---
 
-<a id="english-section"></a>
+<a id="english"></a>
 
-# English Version
+## English
 
-## Project Overview
+### Overview
+Analysis of Saudi aviation traffic from **2020–2025**, using data published by the General Authority of Civil Aviation (GACA). The project combines **Python, SQL, SQLite, Plotly, and Streamlit** to examine passenger traffic, flight movements, airport rankings, annual comparisons, and monthly trends.
 
-**Saudi Aviation Analytics** is a data analytics project exploring air traffic across airports in Saudi Arabia from **2020 to 2025**. The interactive dashboard examines passenger volumes, flight movements, airport performance, and time-based trends using **SQL, Python, Pandas, Plotly, and Streamlit**. The same project includes time-series forecasting in Python and a separate Power BI forecasting dashboard.
+A dedicated forecasting section evaluates **Seasonal Naive, ETS, and SARIMA** on 2025 data, then produces **unofficial passenger forecasts for 2026**. The interactive Streamlit dashboard includes actual-versus-forecast trends, SARIMA 95% prediction intervals, and model error comparisons. A separate **Power BI** report was prepared for portfolio presentation.
 
-## Forecasting / التنبؤ بالسلاسل الزمنية
+### Dashboard sections
+- **National Overview** — annual indicators and trends
+- **Airport Performance** — rankings, shares, and 2024–2025 comparisons
+- **Monthly Trends** — selected years and passenger/flight-movement trends
+- **Forecasting** — 2026 projections, interactive charts, and evaluation metrics
+- **Data Quality** — coverage and missing-value checks
 
-The independent **[Time Series Forecasting & Analytics](forecasting/README.md)** section contains the Python forecasting workflow, the monthly 2023–2025 dataset, model validation, and instructions for exporting to Power BI. The dashboard also includes a **Forecasting** page with three interactive Plotly charts: actual versus projected passengers (2023–2026), a separate SARIMA 95% prediction-interval chart, and a switchable model-error comparison (sMAPE, RMSE, MAE).
+### Files and methods
+- `app.py`, `air_traffic.sqlite`, `requirements.txt` — Streamlit dashboard and processed database
+- [Forecasting folder](forecasting/README.md) — Python analysis, source series, 2026 results, and Power BI-ready CSV files
 
-يتضمن قسم **[التنبؤ بالسلاسل الزمنية](forecasting/README.md)** أكواد Python وبيانات 2023–2025 الشهرية ومقارنة النماذج وتجهيز ملفات Power BI، وتتوفر ثلاثة رسوم تفاعلية داخل قسم التنبؤ في لوحة Streamlit: مقارنة القيم الفعلية والمتوقعة، ونطاق تنبؤ SARIMA بنسبة 95%، ومقارنة أخطاء النماذج مع اختيار مؤشر التقييم.
-
-## Dashboard Features
-
-- **National overview:** Total passenger, flight-movement, and airport indicators.
-- **Airport performance:** Airport rankings, passenger shares, and year-over-year comparisons.
-- **Monthly analysis:** Interactive exploration of air-traffic trends.
-- **Forecasting:** ETS and SARIMA passenger projections for 2026, model evaluation, and 95% SARIMA prediction intervals.
-- **Data quality:** Review of temporal coverage, granularity, and missing values.
-- **Data export:** Downloadable analytical tables in CSV format.
-
-## Technology Stack
-
-**SQL · Python · Pandas · Plotly · Streamlit · SQLite · Statsmodels · Power BI**
-
-## Project Structure and Deployment
-
-The project consists of `app.py` for the application, `requirements.txt` for Python dependencies, and `air_traffic.sqlite` for the SQLite database. All three files are required in the project root for the application to run.
-
-Deployment is supported through **Streamlit Community Cloud** using the GitHub repository, the `main` branch, and `app.py` as the entry point. Local execution is also supported after installing the dependencies:
-
+**Run locally:**
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
-> **Data file status:** The `air_traffic.sqlite` database is included in this repository. It contains processed Saudi aviation traffic data for 2020–2025 and is used directly by the interactive dashboard.
+**Methodology:** The 2022 source has annual granularity; the other included years provide monthly records. Source scope and airport coverage can vary, so cross-year totals are not necessarily directly comparable. Forecast models use 36 monthly observations (2023–2025), with 2025 held out for evaluation. The 2026 figures and SARIMA intervals are **model-based, unofficial forecasts**, not actual passenger counts or official GACA projections.
 
-## Data Source and Methodology
-
-The project uses publicly available air-traffic datasets published by the **[Saudi General Authority of Civil Aviation (GACA)](https://www.gaca.gov.sa/ar/Open-Data/OpenDataLibrary)** for **2020–2025**. Data granularity varies by year: **2022** is represented by annual data, whereas other selected years include monthly detail. Cross-year comparisons therefore require care regarding source scope and airport coverage.
-
-Flight movements do not necessarily represent unique round trips, and passengers per movement is not equivalent to aircraft seat load factor. The resulting indicators describe the compiled dataset and should not be presented as substitutes for official published statistics.
+**Source:** [GACA Open Data Library](https://www.gaca.gov.sa/ar/Open-Data/OpenDataLibrary)
 
 ---
 
-<a id="arabic-section"></a>
+<a id="arabic"></a>
 
-# النسخة العربية
+## العربية
 
-## نبذة عن المشروع
+### نبذة عن المشروع
+مشروع لتحليل حركة الطيران في المملكة العربية السعودية خلال **2020–2025** باستخدام البيانات المنشورة من الهيئة العامة للطيران المدني (GACA). يجمع المشروع بين **Python وSQL وSQLite وPlotly وStreamlit** لاستعراض أعداد المسافرين وحركات الطيران، وترتيب المطارات، والمقارنات السنوية، والاتجاهات الشهرية.
 
-**تحليلات الطيران السعودي** مشروع لتحليل بيانات الحركة الجوية في مطارات المملكة العربية السعودية خلال الفترة **2020–2025**. يقدم لوحة معلومات تفاعلية لاستكشاف أعداد المسافرين وحركات الطيران، ومقارنة أداء المطارات، ودراسة الاتجاهات الزمنية باستخدام **SQL وPython وPandas وPlotly وStreamlit**. ويتضمن المشروع أيضًا التنبؤ بالسلاسل الزمنية باستخدام Python ولوحة منفصلة لتصور النتائج في Power BI.
+يتضمن المشروع قسمًا للتنبؤ بأعداد المسافرين في **2026** باستخدام نماذج **Seasonal Naive وETS وSARIMA**، بعد تقييم أدائها على بيانات 2025. وتعرض لوحة Streamlit رسومًا تفاعلية لمقارنة القيم الفعلية والتوقعات وفترات تنبؤ SARIMA وأخطاء النماذج. كما أُعد تقرير منفصل باستخدام **Power BI** للعرض ضمن ملف الأعمال.
 
-## محتوى لوحة المعلومات
+### أقسام لوحة المعلومات
+- **النظرة الوطنية:** المؤشرات والاتجاهات السنوية
+- **أداء المطارات:** الترتيب والحصص والمقارنة بين 2024 و2025
+- **الحركة الشهرية:** اتجاهات المسافرين وحركات الطيران حسب السنوات المحددة
+- **التنبؤ:** توقعات 2026 والرسوم التفاعلية وتقييم النماذج
+- **جودة البيانات:** تغطية السجلات والقيم المفقودة
 
-- **نظرة وطنية:** مؤشرات إجمالية للمسافرين وحركات الطيران والمطارات.
-- **أداء المطارات:** ترتيب المطارات، وحصصها النسبية، ومقارنة التغير السنوي.
-- **التحليل الشهري:** استكشاف تطور الحركة الجوية باستخدام فلاتر تفاعلية.
-- **التنبؤ:** توقعات أعداد المسافرين لعام 2026 باستخدام ETS وSARIMA، ومقارنة النماذج وفترات تنبؤ SARIMA بنسبة 95%.
-- **جودة البيانات:** مراجعة التغطية الزمنية، ومستويات التفاصيل، والقيم المفقودة.
-- **تصدير النتائج:** إتاحة الجداول التحليلية بصيغة CSV.
+### الملفات والمنهجية
+- `app.py` و`air_traffic.sqlite` و`requirements.txt`: تطبيق Streamlit وقاعدة البيانات المجمّعة
+- [قسم التنبؤ والنتائج](forecasting/README.md): كود Python وبيانات السلسلة الشهرية وتوقعات 2026 وملفات CSV الجاهزة لـPower BI
 
-## التقنيات المستخدمة
-
-**SQL · Python · Pandas · Plotly · Streamlit · SQLite · Statsmodels · Power BI**
-
-## هيكل المشروع والتشغيل
-
-يتضمن المشروع ملف التطبيق `app.py`، وملف المتطلبات البرمجية `requirements.txt`، وقاعدة بيانات SQLite باسم `air_traffic.sqlite`. يعتمد تشغيل التطبيق على وجود الملفات الثلاثة في المجلد الرئيسي للمشروع.
-
-يتوفر نشر التطبيق عبر **Streamlit Community Cloud** بالاعتماد على مستودع GitHub، والفرع `main`، وملف الدخول `app.py`. كما يدعم التشغيل محليًا بعد تثبيت المكتبات المطلوبة:
-
+**التشغيل محليًا:**
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
-> **حالة البيانات:** تتوفر قاعدة بيانات `air_traffic.sqlite` ضمن المستودع، وتحتوي على بيانات حركة الطيران السعودي المجمّعة للفترة 2020–2025، وتُستخدم مباشرة في تشغيل لوحة المعلومات التفاعلية.
+**ملاحظة منهجية:** تتوفر بيانات 2022 بتفاصيل سنوية، بينما تشمل السنوات الأخرى المختارة بيانات شهرية. وقد تختلف تغطية المطارات ونطاق الملفات بين السنوات، لذلك تُفسَّر المقارنات بحذر. تعتمد نماذج التنبؤ على 36 مشاهدة شهرية خلال 2023–2025، مع تقييم الأداء على 2025. نتائج 2026 وفترات تنبؤ SARIMA **توقعات إحصائية غير رسمية** وليست بيانات فعلية أو توقعات صادرة عن الهيئة.
 
-## مصدر البيانات والمنهجية
-
-يعتمد المشروع على ملفات الحركة الجوية المنشورة من **[الهيئة العامة للطيران المدني السعودية (GACA)](https://www.gaca.gov.sa/ar/Open-Data/OpenDataLibrary)** للفترة **2020–2025**. تختلف مستويات تفاصيل البيانات بين السنوات؛ إذ تتوفر بيانات **2022** على المستوى السنوي، بينما تتضمن السنوات الأخرى المختارة تفاصيل شهرية. لذلك تُفسَّر المقارنات السنوية مع مراعاة اختلاف نطاق المصادر وتغطية المطارات.
-
-تمثل حركات الطيران الحركات المسجلة وليست بالضرورة رحلات ذهاب وعودة مستقلة، كما أن متوسط المسافرين لكل حركة لا يعادل نسبة إشغال المقاعد. وتُعد المؤشرات المستخرجة نتائج تحليلية للبيانات المجمعة، وليست بديلًا عن المؤشرات الرسمية المنشورة.
+**المصدر:** [مكتبة البيانات المفتوحة — الهيئة العامة للطيران المدني](https://www.gaca.gov.sa/ar/Open-Data/OpenDataLibrary)
