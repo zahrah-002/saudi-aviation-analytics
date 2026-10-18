@@ -331,7 +331,7 @@ def figure(fig, height=410):
         font=dict(family="Arial", color="#dcecf5"),
         margin=dict(t=45, b=35, l=20, r=20),
         legend=dict(orientation="h", y=1.16),
-        hovermode="closest",
+        hovermode=fig.layout.hovermode or "closest",
         hoverlabel=dict(
             bgcolor="#18304a", bordercolor="#46627c",
             font=dict(family="Arial", size=13, color="#edf7ff"),
