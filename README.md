@@ -20,9 +20,9 @@
 
 ## Forecasting / التنبؤ بالسلاسل الزمنية
 
-The independent **[Time Series Forecasting & Analytics](forecasting/README.md)** section contains the Python forecasting workflow, the monthly 2023–2025 dataset, model validation, and instructions for exporting to Power BI. The dashboard now also includes a **Forecasting** section displaying 2026 passenger projections, model comparisons, and SARIMA prediction intervals.
+The independent **[Time Series Forecasting & Analytics](forecasting/README.md)** section contains the Python forecasting workflow, the monthly 2023–2025 dataset, model validation, and instructions for exporting to Power BI. The dashboard also includes a **Forecasting** page with three interactive Plotly charts: actual versus projected passengers (2023–2026), a separate SARIMA 95% prediction-interval chart, and a switchable model-error comparison (sMAPE, RMSE, MAE).
 
-يتضمن قسم **[التنبؤ بالسلاسل الزمنية](forecasting/README.md)** أكواد Python وبيانات 2023–2025 الشهرية ومقارنة النماذج وتجهيز ملفات Power BI، مع عرض التوقعات أيضًا في قسم مستقل داخل لوحة Streamlit، دون تغيير أقسام التحليل السابقة.
+يتضمن قسم **[التنبؤ بالسلاسل الزمنية](forecasting/README.md)** أكواد Python وبيانات 2023–2025 الشهرية ومقارنة النماذج وتجهيز ملفات Power BI، وتتوفر ثلاثة رسوم تفاعلية داخل قسم التنبؤ في لوحة Streamlit: مقارنة القيم الفعلية والمتوقعة، ونطاق تنبؤ SARIMA بنسبة 95%، ومقارنة أخطاء النماذج مع اختيار مؤشر التقييم.
 
 ## Dashboard Features
 
