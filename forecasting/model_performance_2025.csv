@@ -1,0 +1,4 @@
+model,sMAPE_pct,RMSE,MAE,test_period,evaluation_method
+SARIMA,4.00,592565,462533,2025,Fixed 12-month holdout
+ETS,4.07,616876,469123,2025,Fixed 12-month holdout
+Seasonal Naive,9.09,1143857,1039704,2025,Fixed 12-month holdout
