@@ -41,14 +41,40 @@ Output files are written to `forecasting/output/` locally.
 
 ### الملفات
 
-| الملف | الغرض |
-| --- | --- |
-| [`forecasting.py`](forecasting.py) | اختبار ADF، وتحليل STL، وتقييم الأداء على بيانات 2025 المحجوزة للاختبار، والتقييم المتحرك، وتوقعات ETS وSARIMA |
-| [`Saudi_Aviation_Monthly_2023_2025_Forecasting.csv`](Saudi_Aviation_Monthly_2023_2025_Forecasting.csv) | 36 مشاهدة تاريخية شهرية |
-| [`forecast_2026.csv`](forecast_2026.csv) | توقعات ETS وSARIMA، بالإضافة إلى فترات التنبؤ بنسبة 95% لنموذج SARIMA |
-| [`Saudi_Aviation_PowerBI_Forecasting.csv`](Saudi_Aviation_PowerBI_Forecasting.csv) | 60 صفًا: 36 شهرًا من البيانات التاريخية و24 صفًا من التوقعات الخاصة بالنموذجين |
-| [`model_performance_2025.csv`](model_performance_2025.csv) | أخطاء النماذج الثلاثة عند تقييمها على فترة اختبار ثابتة مدتها 12 شهرًا |
-| `requirements.txt` | المكتبات اللازمة لتشغيل التنبؤ |
+<table dir="rtl">
+  <thead>
+    <tr>
+      <th align="right">الملف</th>
+      <th align="right">الغرض</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td dir="ltr"><a href="forecasting.py"><code>forecasting.py</code></a></td>
+      <td dir="rtl" align="right">اختبار <bdi dir="ltr">ADF</bdi>، وتحليل <bdi dir="ltr">STL</bdi>، وتقييم الأداء على بيانات عام 2025 المخصصة للاختبار، والتقييم المتحرك، وإنتاج توقعات <bdi dir="ltr">ETS</bdi> و<bdi dir="ltr">SARIMA</bdi>.</td>
+    </tr>
+    <tr>
+      <td dir="ltr"><a href="Saudi_Aviation_Monthly_2023_2025_Forecasting.csv"><code>Saudi_Aviation_Monthly_2023_2025_Forecasting.csv</code></a></td>
+      <td dir="rtl" align="right">36 مشاهدة شهرية تاريخية.</td>
+    </tr>
+    <tr>
+      <td dir="ltr"><a href="forecast_2026.csv"><code>forecast_2026.csv</code></a></td>
+      <td dir="rtl" align="right">توقعات <bdi dir="ltr">ETS</bdi> و<bdi dir="ltr">SARIMA</bdi>، بالإضافة إلى فترات التنبؤ بنسبة 95% لنموذج <bdi dir="ltr">SARIMA</bdi>.</td>
+    </tr>
+    <tr>
+      <td dir="ltr"><a href="Saudi_Aviation_PowerBI_Forecasting.csv"><code>Saudi_Aviation_PowerBI_Forecasting.csv</code></a></td>
+      <td dir="rtl" align="right">60 صفًا: 36 صفًا للبيانات الشهرية التاريخية، و24 صفًا للتوقعات الخاصة بالنموذجين.</td>
+    </tr>
+    <tr>
+      <td dir="ltr"><a href="model_performance_2025.csv"><code>model_performance_2025.csv</code></a></td>
+      <td dir="rtl" align="right">أخطاء النماذج الثلاثة خلال فترة اختبار ثابتة مدتها 12 شهرًا.</td>
+    </tr>
+    <tr>
+      <td dir="ltr"><code>requirements.txt</code></td>
+      <td dir="rtl" align="right">المكتبات البرمجية اللازمة لتشغيل التنبؤ.</td>
+    </tr>
+  </tbody>
+</table>
 
 ### المنهجية
 
